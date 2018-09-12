@@ -1,0 +1,43 @@
+.cell {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid white;
+}
+
+.cell-door {
+  background-color: #2d995b;
+}
+
+.cell-west {
+  border-left: 3px solid black;
+}
+
+.cell-west-door {
+  border-left: 3px solid red;
+}
+
+.cell-east {
+  border-right: 3px solid black;
+}
+
+.cell-east-door {
+  border-right: 3px solid red;
+}
+
+.cell-north {
+  border-top: 3px solid black;
+}
+
+.cell-north-door {
+  border-top: 3px solid red;
+}
+
+.cell-south {
+  border-bottom: 3px solid black;
+}
+
+.cell-south-door {
+  border-bottom: 3px solid red;
+}
+

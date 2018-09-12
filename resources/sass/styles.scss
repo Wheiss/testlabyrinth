@@ -1,0 +1,38 @@
+$borderWidth: 3px;
+
+.cell {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+
+  &-door {
+    background-color: #2d995b;
+  }
+
+  //background-color: #2d995b;
+  border: $borderWidth solid white;
+  &-west {
+    border-left: $borderWidth solid black;
+    &-door {
+      border-left: $borderWidth solid red;
+    }
+  }
+  &-east {
+    border-right: $borderWidth solid black;
+    &-door {
+      border-right: $borderWidth solid red;
+    }
+  }
+  &-north {
+    border-top: $borderWidth solid black;
+    &-door {
+      border-top: $borderWidth solid red;
+    }
+  }
+  &-south {
+    border-bottom: $borderWidth solid black;
+    &-door {
+      border-bottom: $borderWidth solid red;
+    }
+  }
+}
