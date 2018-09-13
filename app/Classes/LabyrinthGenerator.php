@@ -43,9 +43,6 @@ class LabyrinthGenerator
         $entryPos = $this->getRandomSideNodePos($entrySide, $width, $height);
         $exitPos = $this->getRandomSideNodePos($exitSide, $width, $height);
 
-        $entryNode = new Node($entryPos);
-//        $exitNode = new Node($exitPos);
-
         $nodes = &$labyrinth->nodes;
 
         for ($horisontalIndex = 0; $horisontalIndex < $width; $horisontalIndex++) {
@@ -64,6 +61,9 @@ class LabyrinthGenerator
         }
 
         $this->currentNode = $this->labyrinth->entry;
+        if(empty($this->currentNode)) {
+            dd($entryPos, $width, $height);
+        }
 
         $this->goRandom();
 
@@ -85,7 +85,7 @@ class LabyrinthGenerator
      */
     private function addEntryPoint($pointName, $node, $expectedPosition)
     {
-        if ($node->position->horizontal == $expectedPosition->horizontal && $node->position->vertical == $expectedPosition->vertical) {
+        if ($node->position->eq($expectedPosition)) {
             $this->labyrinth->{$pointName} = $node;
 
             $node->fillObstacles(new Wall());
@@ -126,11 +126,16 @@ class LabyrinthGenerator
      */
     private function checkPosInBorders($pos)
     {
-        return ($this->width > $pos->horizontal && $pos->horizontal >= 0) && ($this->height > $pos->vertical && $pos->vertical >= 0);
+        return array_has($this->labyrinth->nodes, $pos->getIndex());
     }
 
     private function getAvailableDirections()
     {
+        static $path = [];
+        if(!$this->currentNode) {
+            dd(array_pop($path), $this->indexesPath, $this->width, $this->height);
+        }
+        $path[] = [$this->currentNode, $this->currentNode->position->getIndex()];
         $node = $this->currentNode;
         $nodePos = $node->position;
 
@@ -158,6 +163,7 @@ class LabyrinthGenerator
         return $visitedNodes->has($posIndex);
     }
 
+    private $indexesPath = [];
     private function goRandom()
     {
         $nodes = &$this->labyrinth->nodes;
@@ -172,18 +178,23 @@ class LabyrinthGenerator
 
             $direction = $availableDirections->random();
 
-            $currentNode = &$this->currentNode;
+//            dump($direction);
+            $currentNode = $this->currentNode;
 
             $currentNode->destroyObstacle($direction);
 
             $currentPos = $currentNode->position;
-            $newPos = (clone $currentPos)->addDir($direction);
+            $newPos = clone $currentPos;
+            $newPos->addDir($direction);
             $newIndex = $this->getNodeIndexByPosition($newPos);
+            array_push($this->indexesPath, $newIndex);
 
-            $nextNode = &$nodes[$newIndex];
+            $nextNode = &$this->labyrinth->nodes[$newIndex];
 
             $oppositeDir = Position::getOppositeSide($direction);
             $nextNode->destroyObstacle($oppositeDir);
+
+//            if(!$nextNode) dd($this->currentNode, $direction);
             $this->currentNode = $nextNode;
 
             $this->goRandom();
@@ -199,6 +210,7 @@ class LabyrinthGenerator
         if ($this->path->isEmpty()) {
             return;
         }
+
         $this->currentNode = $this->path->pop();
 
         $this->goRandom();
@@ -210,7 +222,7 @@ class LabyrinthGenerator
             $horizontal = rand(0, $width - 1);
             $vertical = ($side == Position::NORTH ? $height - 1 : 0);
         } else {
-            $vertical = rand(0, $width - 1);
+            $vertical = rand(0, $height - 1);
             $horizontal = ($side == Position::EAST ? $width - 1 : 0);
         }
 

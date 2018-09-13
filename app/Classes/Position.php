@@ -71,4 +71,9 @@ class Position
     {
         return 'h' . $this->horizontal . 'v' . $this->vertical;
     }
+
+    public function eq(Position $position)
+    {
+        return $this->horizontal == $position->horizontal && $this->vertical == $position->vertical;
+    }
 }

@@ -17,17 +17,31 @@ class LabyrinthGeneratorTest extends TestCase
 
     public function labyrinthProvider()
     {
-        // Сперва сгененрируем лабиринт 5*5
-        $width = 5;
-        $height = 5;
+        $minWidth = 2;
+        $minHeight = 2;
+        $maxWidth = 20;
+        $maxHeight = 20;
+        // Массив лабиринтов
+        $labyrinths = [];
 
-        // Мы хотим генерировать лабиринт
-        // Пусть ответом генератора будет структура данных Labyrinth
-        $generator = new LabyrinthGenerator($width, $height);
+        for($width = $minWidth; $width <= $maxWidth; $width++) {
+            for($height = $minHeight; $height <= $maxHeight; $height++) {
+                // Не будем генерить узкие лабиринты
+                if($width/$height > 2 || $height/$width > 2) {
+                    continue;
+                }
 
+                // Мы хотим генерировать лабиринт
+                // Пусть ответом генератора будет структура данных Labyrinth
+                $generator = new LabyrinthGenerator($width, $height);
 
-        $labyrinth = $generator->generate();
-        return [[$labyrinth, $width, $height]];
+                $labyrinth = $generator->generate();
+
+                $labyrinths[] = [$labyrinth, $width, $height];
+            }
+        }
+
+        return $labyrinths;
     }
 
     /**
@@ -159,9 +173,18 @@ class LabyrinthGeneratorTest extends TestCase
     {
         $this->entry = $labyrinth->entry;
 
-        $this->visitedNodes = collect([$this->entry]);
+        $this->visitedNodes = collect();
        // Попытаемся пройти лабиринт, а по дороге посмотрим на стены
         $this->goLabyrinth($labyrinth, $this->entry);
+
+        $nodesCount = $width*$height;
+
+        $this->assertEquals($nodesCount, $this->visitedNodes->count());
+
+        // Проверим, что все ноды содержат позицию
+        foreach ($labyrinth->nodes as $node) {
+            $this->assertAttributeInstanceOf(Position::class, 'position', $node);
+        }
 
         // Проверим, что посетили все ячейки
     }

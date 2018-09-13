@@ -71,8 +71,6 @@ class Node
 
     public function eq($node)
     {
-        $thisPos = $this->position;
-        $nodePos = $node->position;
-        return $thisPos->horizontal == $nodePos->horizontal && $thisPos->vertical == $nodePos->vertical;
+        return $this->position->eq($node->position);
     }
 }
